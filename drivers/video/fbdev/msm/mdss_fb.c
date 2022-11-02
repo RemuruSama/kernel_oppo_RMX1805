@@ -55,7 +55,7 @@
 #include "mdp3_ctrl.h"
 #include "mdss_sync.h"
 
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
 /*
 * add for erase power by android
 */
@@ -117,7 +117,7 @@ static ssize_t mdss_set_ffl_setting(struct device *dev,
 static int mdss_fb_start_ffl_thread(struct msm_fb_data_type *mfd);
 
 static void mdss_fb_stop_ffl_thread(struct msm_fb_data_type *mfd);
-#endif /* VENDOR_EDIT */
+#endif /* CONFIG_VENDOR_EDIT */
 #ifdef CONFIG_FB_MSM_TRIPLE_BUFFER
 #define MDSS_FB_NUM 3
 #else
@@ -156,7 +156,7 @@ static u32 mdss_fb_pseudo_palette[16] = {
 
 static struct msm_mdp_interface *mdp_instance;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 int g_shutdown_pending = 0;
 int g_gesture = 0;
 #endif
@@ -346,7 +346,7 @@ static int mdss_fb_notify_update(struct msm_fb_data_type *mfd,
 
 static int lcd_backlight_registered;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 #else
 static void wt_mdss_bright_to_backlight_map(u64 *values, struct msm_fb_data_type *mfd)
 {
@@ -392,7 +392,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 	struct msm_fb_data_type *mfd = dev_get_drvdata(led_cdev->dev->parent);
 	u64 bl_lvl;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	int value_temp, value_a, value_b;
 #endif
 
@@ -401,7 +401,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 		mfd->boot_notification_led = NULL;
 	}
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 if ( value > 0) {
 	pr_debug(" %s  value %d \n", __func__, value);
 	if (mfd->panel_info->blmap){
@@ -432,7 +432,7 @@ if ( value > 0) {
 	/* This maps android backlight level 0 to 255 into
 	 * driver backlight level 0 to bl_max with rounding
 	 */
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	MDSS_BRIGHT_TO_BL(bl_lvl, value, mfd->panel_info->bl_max,
 				mfd->panel_info->brightness_max);
 #else
@@ -448,7 +448,7 @@ if ( value > 0) {
 
 	if (!IS_CALIB_MODE_BL(mfd) && (!mfd->ext_bl_ctrl || !value ||
 							!mfd->bl_level)) {
-		#ifndef VENDOR_EDIT
+		#ifndef CONFIG_VENDOR_EDIT
 		/*
 		* add for support face fill light feature
 		*/
@@ -481,7 +481,7 @@ if ( value > 0) {
 			}
 		}
 		pr_debug("mdss_fb_set_bl_brightness 1 bl_lvl =%d\n",system_backlight_target);
-		#endif /*VENDOR_EDIT*/
+		#endif /*CONFIG_VENDOR_EDIT*/
 	}
 }
 
@@ -1082,7 +1082,7 @@ static ssize_t mdss_fb_get_persist_mode(struct device *dev,
 	return ret;
 }
 
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
 /*
 * add for lcd driver
 */
@@ -1328,7 +1328,7 @@ static DEVICE_ATTR(measured_fps, 0664,
 	mdss_fb_get_fps_info, NULL);
 static DEVICE_ATTR(msm_fb_persist_mode, 0644,
 	mdss_fb_get_persist_mode, mdss_fb_change_persist_mode);
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
 /*
 * add for lcd driver
 */
@@ -1357,7 +1357,7 @@ static struct attribute *mdss_fb_attrs[] = {
 	&dev_attr_msm_fb_dfps_mode.attr,
 	&dev_attr_measured_fps.attr,
 	&dev_attr_msm_fb_persist_mode.attr,
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	/*
 	* add for lcd driver
 	*/
@@ -1399,7 +1399,7 @@ static void mdss_fb_shutdown(struct platform_device *pdev)
 	struct msm_fb_data_type *mfd = platform_get_drvdata(pdev);
 
 	mfd->shutdown_pending = true;
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	g_shutdown_pending = 1;
 #endif
 
@@ -1706,7 +1706,7 @@ static int mdss_fb_probe(struct platform_device *pdev)
 
 	mfd->ext_ad_ctrl = -1;
 
-	#ifndef VENDOR_EDIT
+	#ifndef CONFIG_VENDOR_EDIT
 	/*
 	* modify for lcd happen esd set backlight 127 before set system backlight
 	*/
@@ -1848,7 +1848,7 @@ static int mdss_fb_probe(struct platform_device *pdev)
 
 	INIT_DELAYED_WORK(&mfd->idle_notify_work, __mdss_fb_idle_notify_work);
 
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	/*
 	* add for silence and sau mode
 	*/
@@ -1857,7 +1857,7 @@ static int mdss_fb_probe(struct platform_device *pdev)
 		pr_debug("lcd_closebl_flag = 1\n");
 		lcd_closebl_flag = 1;
 	}
-	#endif /* VENDOR_EDIT */
+	#endif /* CONFIG_VENDOR_EDIT */
 
 	return rc;
 }
@@ -2359,13 +2359,13 @@ static int mdss_fb_blank_blank(struct msm_fb_data_type *mfd,
 
 	mfd->op_enable = false;
 	if (mdss_panel_is_power_off(req_power_state)) {
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	/*
 	* add for support face fill light feature
 	*/
 		if (mfd->ffl_thread)
 			mdss_fb_stop_ffl_thread(mfd);
-	#endif /*VENDOR_EDIT*/
+	#endif /*CONFIG_VENDOR_EDIT*/
 
 		/* Stop Display thread */
 		if (mfd->disp_thread)
@@ -2373,7 +2373,7 @@ static int mdss_fb_blank_blank(struct msm_fb_data_type *mfd,
 		mutex_lock(&mfd->bl_lock);
 		current_bl = mfd->bl_level;
 		mfd->allow_bl_update = true;
-		#ifdef ODM_WT_EDIT
+		#ifdef CONFIG_ODM_WT_EDIT
 		pr_info("LCD_LOG : %s: mdss_fb_set_backlight(0)\n", __func__);
 		#endif
 		mdss_fb_set_backlight(mfd, 0);
@@ -2415,7 +2415,7 @@ static int mdss_fb_blank_unblank(struct msm_fb_data_type *mfd)
 			return ret;
 	}
 
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	/*
 	* add for support face fill light feature
 	*/
@@ -2424,7 +2424,7 @@ static int mdss_fb_blank_unblank(struct msm_fb_data_type *mfd)
 		if (IS_ERR_VALUE((unsigned long)ret))
 			return ret;
 	}
-	#endif /*VENDOR_EDIT*/
+	#endif /*CONFIG_VENDOR_EDIT*/
 
 	cur_power_state = mfd->panel_power_state;
 	pr_debug("Transitioning from %d --> %d\n", cur_power_state,
@@ -2478,7 +2478,7 @@ static int mdss_fb_blank_unblank(struct msm_fb_data_type *mfd)
 			 */
 			if (IS_CALIB_MODE_BL(mfd))
 			{
-				#ifdef ODM_WT_EDIT
+				#ifdef CONFIG_ODM_WT_EDIT
 				pr_info("LCD_LOG : %s: mdss_fb_set_backlight(%d)\n", __func__, mfd->calib_mode_bl);
 				#endif
 				mdss_fb_set_backlight(mfd, mfd->calib_mode_bl);
@@ -2486,7 +2486,7 @@ static int mdss_fb_blank_unblank(struct msm_fb_data_type *mfd)
 			else if ((!mfd->panel_info->mipi.post_init_delay) &&
 				(mfd->unset_bl_level != U32_MAX))
 			{
-				#ifdef ODM_WT_EDIT
+				#ifdef CONFIG_ODM_WT_EDIT
 				pr_info("LCD_LOG : %s: mdss_fb_set_backlight(%d)\n", __func__, mfd->unset_bl_level);
 				#endif
 				mdss_fb_set_backlight(mfd, mfd->unset_bl_level);
@@ -2602,7 +2602,7 @@ static int mdss_fb_blank(int blank_mode, struct fb_info *info)
 	int ret;
 	struct mdss_panel_data *pdata;
 	struct msm_fb_data_type *mfd = (struct msm_fb_data_type *)info->par;
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	struct mdss_data_type *mdata;
 	#endif
 	ret = mdss_fb_pan_idle(mfd);
@@ -2612,7 +2612,7 @@ static int mdss_fb_blank(int blank_mode, struct fb_info *info)
 		return ret;
 	}
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	pr_info("LCD_LOG : %s blank_mode = %d, +++\n", __func__, blank_mode);
 #endif
 
@@ -2631,7 +2631,7 @@ static int mdss_fb_blank(int blank_mode, struct fb_info *info)
 	}
 	pr_debug("mode: %d\n", blank_mode);
 
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	mdata = mfd_to_mdata(mfd);
 	mdata->scm_set_allowable = false;
 	#endif
@@ -2652,7 +2652,7 @@ static int mdss_fb_blank(int blank_mode, struct fb_info *info)
 end:
 	mutex_unlock(&mfd->mdss_sysfs_lock);
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	pr_info("LCD_LOG : %s blank_mode = %d, ---\n", __func__, blank_mode);
 #endif
 
@@ -3268,14 +3268,14 @@ static int mdss_fb_register(struct msm_fb_data_type *mfd)
 	init_waitqueue_head(&mfd->ioctl_q);
 	init_waitqueue_head(&mfd->kickoff_wait_q);
 
-	#ifdef VENDOR_EDIT
+	#ifdef CONFIG_VENDOR_EDIT
 	/*
 	* add for support face fill light feature
 	*/
 	atomic_set(&ffl_pending, 0);
 	init_waitqueue_head(&ffl_wait_q);
 	initial_ffl_light_save();
-	#endif /*VENDOR_EDIT*/
+	#endif /*CONFIG_VENDOR_EDIT*/
 
 	ret = fb_alloc_cmap(&fbi->cmap, 256, 0);
 	if (ret)
@@ -3303,7 +3303,7 @@ static int mdss_fb_open(struct fb_info *info, int user)
 	struct mdss_fb_file_info *file_info = NULL;
 	int result;
 	struct task_struct *task = current->group_leader;
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	g_shutdown_pending = 0;
 	#endif
 
@@ -3359,7 +3359,7 @@ static int mdss_fb_release_all(struct fb_info *info, bool release_all)
 	int ret = 0;
 	bool node_found = false;
 	struct task_struct *task = current->group_leader;
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	g_shutdown_pending = 1;
 #endif
 

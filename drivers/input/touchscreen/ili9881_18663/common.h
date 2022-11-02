@@ -1,6 +1,6 @@
 /*******************************************************************************
 ** Copyright (C), 2008-2018, OPPO Mobile Comm Corp., Ltd.
-** ODM_WT_EDIT
+** CONFIG_ODM_WT_EDIT
 ** FILE: - common.c
 ** Description : This program is for ili9881 driver common.c
 ** Version: 1.0
@@ -168,7 +168,7 @@ enum {
 		if (level & ipio_debug_level)									\
 		pr_info("ILITEK: (%s, %d): " fmt, __func__, __LINE__, ##arg);	\
 	} while (0)
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 #define oppo_debug(level, fmt, arg...)									\
 	do {																\
 		if (level & oppo_debug_level)									\

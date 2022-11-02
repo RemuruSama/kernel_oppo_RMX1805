@@ -16,7 +16,7 @@
 #include <linux/delay.h>
 #include <linux/mdss_io_util.h>
 
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
 #include <linux/regulator/of_regulator.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/driver.h>
@@ -26,14 +26,13 @@
 
 #define MAX_I2C_CMDS  16
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 extern int g_shutdown_pending;
 extern int g_gesture;
 #endif
 
-#ifdef VENDOR_EDIT
-extern int himax_tp;
-#endif
+int himax_tp;
+
 
 void mdss_reg_w(struct mdss_io_data *io, u32 offset, u32 value, u32 debug)
 {
@@ -303,7 +302,7 @@ int msm_mdss_enable_vreg(struct mdss_vreg *in_vreg, int num_vreg, int enable)
 					in_vreg[i].vreg_name);
 				goto vreg_set_opt_mode_fail;
 			}
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 			if ( g_shutdown_pending == 0 && g_gesture == 1) {
 				if (!regulator_enable(in_vreg[i].vreg))
 					rc = regulator_enable(in_vreg[i].vreg);
@@ -331,7 +330,7 @@ int msm_mdss_enable_vreg(struct mdss_vreg *in_vreg, int num_vreg, int enable)
 					(in_vreg[i].pre_off_sleep * 1000) + 10);
 			regulator_set_load(in_vreg[i].vreg,
 				in_vreg[i].load[DSS_REG_MODE_DISABLE]);
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 			if ( g_shutdown_pending == 0 && g_gesture == 1) {
 				pr_debug("%s: not do reset \n", __func__);
 			} else {
@@ -370,7 +369,7 @@ vreg_set_opt_mode_fail:
 } /* msm_mdss_enable_vreg */
 EXPORT_SYMBOL(msm_mdss_enable_vreg);
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 int msm_mdss_enable_vreg_truly(struct mdss_vreg *in_vreg, int num_vreg, int enable)
 {
 	int i = 0, rc = 0;
@@ -411,7 +410,7 @@ int msm_mdss_enable_vreg_truly(struct mdss_vreg *in_vreg, int num_vreg, int enab
 			if (in_vreg[i].post_on_sleep && need_sleep)
 				usleep_range((in_vreg[i].post_on_sleep * 1000),
 					(in_vreg[i].post_on_sleep * 1000) + 10);
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
                 if(!strcmp("ibb",in_vreg[i].vreg_name)){
                     pr_info("%s-%d: vreg_name=%s,current_usecount=%d\n",__func__,__LINE__,
                         in_vreg[i].vreg_name,in_vreg[i].vreg->rdev->use_count);
@@ -436,13 +435,13 @@ int msm_mdss_enable_vreg_truly(struct mdss_vreg *in_vreg, int num_vreg, int enab
 				in_vreg[i].load[DSS_REG_MODE_DISABLE]);
 			if (regulator_is_enabled(in_vreg[i].vreg))
 				regulator_disable(in_vreg[i].vreg);
-#ifdef VENDOR_EDIT
+#ifdef CONFIG_VENDOR_EDIT
                 if(!strcmp("ibb",in_vreg[i].vreg_name)){
                     pr_info("%s-%d: vreg_name=%s,current_usecount=%d\n",__func__,__LINE__,
                         in_vreg[i].vreg_name,in_vreg[i].vreg->rdev->use_count);
                 }
 #endif
-                #ifdef VENDOR_EDIT
+                #ifdef CONFIG_VENDOR_EDIT
                 if ((himax_tp == 1) && (strcmp(in_vreg[i].vreg_name, "ibb") == 0)) {
 
                     while ((in_vreg[i].vreg->rdev->use_count > 0) && (ibb_disable_count > 0)) {

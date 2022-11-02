@@ -1,6 +1,6 @@
 /******************************************************************
  * ** Copyright (C), 2008-2016, OPPO Mobile Comm Corp., Ltd.
- * ** ODM_WT_EDIT
+ * ** CONFIG_ODM_WT_EDIT
  * ** File: - wt_system_monitor.h
  * ** Description: Add for crash log saving machanism
  * ** Version: 1.0

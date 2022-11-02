@@ -1,6 +1,6 @@
 /*******************************************************************************
 ** Copyright (C), 2008-2016, OPPO Mobile Comm Corp., Ltd.
-** ODM_WT_EDIT
+** CONFIG_ODM_WT_EDIT
 ** FILE: - nt36xxx.c
 ** Description : HEAD FILE FOR NT36XXX.C
 ** Version: 1.0
@@ -77,7 +77,7 @@ extern const uint16_t touch_key_array[TOUCH_KEY_NUM];
 #define NVT_TOUCH_MP 1
 #define MT_PROTOCOL_B 1
 #define WAKEUP_GESTURE 1
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 #if WAKEUP_GESTURE
 //extern const uint16_t gesture_key_array[];
 #endif
@@ -153,7 +153,7 @@ struct oppo_debug_info {
 };
 #endif
 #define BOOT_UPDATE_FIRMWARE 1
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 #define BOOT_UPDATE_FIRMWARE_NAME "novatek_xl_ts_fw.bin"
 #define MP_UPDATE_FIRMWARE_NAME "novatek_xl_mp.bin"
 #define BOOT_UPDATE_FIRMWARE_NAME_TM "novatek_tm_ts_fw.bin"
@@ -207,7 +207,7 @@ struct nvt_ts_data {
 	const struct nvt_ts_mem_map *mmap;
 	uint8_t carrier_system;
 	uint16_t nvt_pid;
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	uint8_t debug_level;
 	uint8_t selft_test_flg;
 	struct gesture_info gesture;
@@ -258,7 +258,7 @@ typedef enum {
 	MODE_GAME
 } NVT_CUSTOMIZED_MODE;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 typedef enum
 {
     PALM = 0,

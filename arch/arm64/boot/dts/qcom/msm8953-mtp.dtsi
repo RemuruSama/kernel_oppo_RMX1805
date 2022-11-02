@@ -71,8 +71,6 @@
 		focaltech,max-touch-number = <10>;
 		share,lcd_reset-gpio = <&tlmm 61 0>;
 		share,cs-gpio = <&tlmm 10 0>;
-		lab-supply = <&lcdb_ldo_vreg>;
-		ibb-supply = <&lcdb_ncp_vreg>;
 		vdd-supply = <&iovdd_gpio_vreg>;
 		//ctp-supply = <&pm8953_l5>;
 		/* 672 */
@@ -1110,7 +1108,7 @@
 				novatek,reset-gpio = <&tlmm 64 0x00>;
 				novatek,irq-gpio = <&tlmm 65 0x2001>;
 			};
-	};
+	}; 
 &sdhc_1 {
 	/* device core power supply */
 	vdd-supply = <&pm8953_l8>;
@@ -1203,8 +1201,8 @@
 	
  	parent_iovdd_gpio-supply = <&pm8953_s4>;
  	iovdd_gpio-supply = <&iovdd_gpio_vreg>;
-	lab-supply = <&lcdb_ldo_vreg>;
-	ibb-supply = <&lcdb_ncp_vreg>;
+	//lab-supply = <&lcdb_ldo_vreg>;
+	//ibb-supply = <&lcdb_ncp_vreg>;
 
 };
 

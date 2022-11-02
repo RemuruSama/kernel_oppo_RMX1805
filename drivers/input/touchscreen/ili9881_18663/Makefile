@@ -1,6 +1,6 @@
 #*******************************************************************************
 # Copyright (C), 2008-2018, OPPO Mobile Comm Corp., Ltd.
-# ODM_WT_EDIT
+# CONFIG_ODM_WT_EDIT
 # FILE: - Makefile
 # Description : This program is for ili9881 driver Makefile
 # Version: 1.0

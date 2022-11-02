@@ -40,16 +40,16 @@
 #include "qg-battery-profile.h"
 #include "qg-defs.h"
 
-#ifndef ODM_WT_EDIT
+#ifndef CONFIG_ODM_WT_EDIT
 static int qg_debug_mask;
 #else
-static int qg_debug_mask = QG_DEBUG_SOC | QG_DEBUG_RESTORE_SOC;
+static int qg_debug_mask = QG_DEBUG_SOC ;
 #endif
 module_param_named(
 	debug_mask, qg_debug_mask, int, 0600
 );
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 static bool qg_batt_valid_ocv = false;
 module_param_named(batt_valid_ocv, qg_batt_valid_ocv, bool, S_IRUSR | S_IWUSR);
 
@@ -206,7 +206,7 @@ static void qg_notify_charger(struct qpnp_qg *chip)
 	if (!chip->batt_psy)
 		return;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	if (chip->profile_loaded == false) {
 		prop.intval = 0;
 		power_supply_set_property(chip->batt_psy,
@@ -682,7 +682,7 @@ static void qg_retrieve_esr_params(struct qpnp_qg *chip)
 	if (!rc && data) {
 		chip->kdata.param[QG_ESR_CHARGE_DELTA].data = data;
 		chip->kdata.param[QG_ESR_CHARGE_DELTA].valid = true;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR_CHARGE_DELTA SDAM=%d\n", data);
 	} else if (rc < 0) {
 		pr_err("Failed to read ESR_CHARGE_DELTA rc=%d\n", rc);
@@ -692,7 +692,7 @@ static void qg_retrieve_esr_params(struct qpnp_qg *chip)
 	if (!rc && data) {
 		chip->kdata.param[QG_ESR_DISCHARGE_DELTA].data = data;
 		chip->kdata.param[QG_ESR_DISCHARGE_DELTA].valid = true;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR_DISCHARGE_DELTA SDAM=%d\n", data);
 	} else if (rc < 0) {
 		pr_err("Failed to read ESR_DISCHARGE_DELTA rc=%d\n", rc);
@@ -703,7 +703,7 @@ static void qg_retrieve_esr_params(struct qpnp_qg *chip)
 		data = CAP(QG_ESR_SF_MIN, QG_ESR_SF_MAX, data);
 		chip->kdata.param[QG_ESR_CHARGE_SF].data = data;
 		chip->kdata.param[QG_ESR_CHARGE_SF].valid = true;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR_CHARGE_SF SDAM=%d\n", data);
 	} else if (rc < 0) {
 		pr_err("Failed to read ESR_CHARGE_SF rc=%d\n", rc);
@@ -714,7 +714,7 @@ static void qg_retrieve_esr_params(struct qpnp_qg *chip)
 		data = CAP(QG_ESR_SF_MIN, QG_ESR_SF_MAX, data);
 		chip->kdata.param[QG_ESR_DISCHARGE_SF].data = data;
 		chip->kdata.param[QG_ESR_DISCHARGE_SF].valid = true;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR_DISCHARGE_SF SDAM=%d\n", data);
 	} else if (rc < 0) {
 		pr_err("Failed to read ESR_DISCHARGE_SF rc=%d\n", rc);
@@ -728,28 +728,28 @@ static void qg_store_esr_params(struct qpnp_qg *chip)
 	if (chip->udata.param[QG_ESR_CHARGE_DELTA].valid) {
 		esr = chip->udata.param[QG_ESR_CHARGE_DELTA].data;
 		qg_sdam_write(SDAM_ESR_CHARGE_DELTA, esr);
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"SDAM store ESR_CHARGE_DELTA=%d\n", esr);
 	}
 
 	if (chip->udata.param[QG_ESR_DISCHARGE_DELTA].valid) {
 		esr = chip->udata.param[QG_ESR_DISCHARGE_DELTA].data;
 		qg_sdam_write(SDAM_ESR_DISCHARGE_DELTA, esr);
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"SDAM store ESR_DISCHARGE_DELTA=%d\n", esr);
 	}
 
 	if (chip->udata.param[QG_ESR_CHARGE_SF].valid) {
 		esr = chip->udata.param[QG_ESR_CHARGE_SF].data;
 		qg_sdam_write(SDAM_ESR_CHARGE_SF, esr);
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"SDAM store ESR_CHARGE_SF=%d\n", esr);
 	}
 
 	if (chip->udata.param[QG_ESR_DISCHARGE_SF].valid) {
 		esr = chip->udata.param[QG_ESR_DISCHARGE_SF].data;
 		qg_sdam_write(SDAM_ESR_DISCHARGE_SF, esr);
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"SDAM store ESR_DISCHARGE_SF=%d\n", esr);
 	}
 }
@@ -782,7 +782,7 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 		if ((first_pre_i < 0 && pre_i > 0) ||
 			(first_pre_i > 0 && post_i < 0) ||
 			(first_pre_i < 0 && post_i > 0)) {
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+			qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR-sign mismatch %d reject all data\n", i);
 			esr_avg = count = 0;
 			break;
@@ -795,7 +795,7 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 		if (!diff_v || !diff_i ||
 			(diff_i < chip->dt.esr_qual_i_ua) ||
 			(diff_v < chip->dt.esr_qual_v_uv)) {
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+			qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR (%d) V/I %duA %duV fails qualification\n",
 				i, diff_i, diff_v);
 			chip->esr_data[i].valid = false;
@@ -804,7 +804,7 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 
 		chip->esr_data[i].esr =
 			DIV_ROUND_CLOSEST(diff_v * 1000, diff_i);
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"ESR qualified: i=%d pre_i=%d pre_v=%d post_i=%d post_v=%d esr_diff_v=%d esr_diff_i=%d esr=%d\n",
 			i, pre_i, pre_v, post_i, post_v,
 			diff_v, diff_i, chip->esr_data[i].esr);
@@ -814,14 +814,14 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 	}
 
 	if (!count) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"No ESR samples qualified, ESR not found\n");
 		chip->esr_avg = 0;
 		return 0;
 	}
 
 	esr_avg /= count;
-	qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+	qg_dbg(chip, QG_DEBUG_SOC,
 		"ESR all sample average=%d count=%d apply_SD=%d\n",
 		esr_avg, count, (esr_avg * ESR_SD_PERCENT) / 100);
 
@@ -839,11 +839,11 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 			/* valid ESR */
 			chip->esr_avg += chip->esr_data[i].esr;
 			count++;
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+			qg_dbg(chip, QG_DEBUG_SOC,
 				"Valid ESR after SD (%d) %d mOhm\n",
 				i, chip->esr_data[i].esr);
 		} else {
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+			qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR (%d) %d falls-out of SD(%d)\n",
 				i, chip->esr_data[i].esr, ESR_SD_PERCENT);
 		}
@@ -851,10 +851,10 @@ static int qg_process_esr_data(struct qpnp_qg *chip)
 
 	if (count >= QG_MIN_ESR_COUNT) {
 		chip->esr_avg /= count;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "Average estimated ESR %d mOhm\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "Average estimated ESR %d mOhm\n",
 					chip->esr_avg);
 	} else {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"Not enough ESR samples, ESR not found\n");
 		chip->esr_avg = 0;
 	}
@@ -880,7 +880,7 @@ static int qg_esr_estimate(struct qpnp_qg *chip)
 		return rc;
 	if (chip->charge_status == POWER_SUPPLY_STATUS_CHARGING &&
 				ibat > chip->dt.esr_min_ibat_ua) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"Skip CHG ESR, Fails IBAT ibat(%d) min_ibat(%d)\n",
 				ibat, chip->dt.esr_min_ibat_ua);
 		return 0;
@@ -892,13 +892,13 @@ static int qg_esr_estimate(struct qpnp_qg *chip)
 
 	if (chip->batt_soc != INT_MIN && (chip->batt_soc <
 					chip->dt.esr_disable_soc)) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+		qg_dbg(chip, QG_DEBUG_SOC,
 			"Skip ESR, batt-soc below %d\n",
 				chip->dt.esr_disable_soc);
 		return 0;
 	}
 
-	qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "FIFO done count=%d ESR mod count=%d\n",
+	qg_dbg(chip, QG_DEBUG_SOC, "FIFO done count=%d ESR mod count=%d\n",
 			chip->fifo_done_count, qg_esr_mod_count);
 
 	if ((chip->fifo_done_count % qg_esr_mod_count) != 0)
@@ -950,7 +950,7 @@ static int qg_esr_estimate(struct qpnp_qg *chip)
 			/* check ESR-done status */
 			if (!(reg1 & ESR_MEAS_IN_PROGRESS_BIT) &&
 					(reg0 & ESR_MEAS_DONE_BIT)) {
-				qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+				qg_dbg(chip, QG_DEBUG_SOC,
 					"ESR measurement done %d count %d\n",
 						i, esr_done_count);
 				break;
@@ -996,7 +996,7 @@ static int qg_esr_estimate(struct qpnp_qg *chip)
 			if ((int)chip->esr_data[i].pre_esr_i < 0)
 				is_charging = true;
 
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC,
+			qg_dbg(chip, QG_DEBUG_SOC,
 				"ESR values for %d iteration pre_v=%d pre_i=%d post_v=%d post_i=%d\n",
 				i, chip->esr_data[i].pre_esr_v,
 				(int)chip->esr_data[i].pre_esr_i,
@@ -1022,7 +1022,7 @@ static int qg_esr_estimate(struct qpnp_qg *chip)
 	if (chip->esr_avg) {
 		chip->kdata.param[QG_ESR].data = chip->esr_avg;
 		chip->kdata.param[QG_ESR].valid = true;
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "ESR_SW=%d during %s\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "ESR_SW=%d during %s\n",
 			chip->esr_avg, is_charging ? "CHARGE" : "DISCHARGE");
 		qg_retrieve_esr_params(chip);
 		chip->esr_actual = chip->esr_avg;
@@ -1563,8 +1563,7 @@ static int qg_get_battery_capacity(struct qpnp_qg *chip, int *soc)
 
 	return 0;
 }
-
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 static const char *qg_get_cycle_counts(struct qpnp_qg *chip)
 {
 	int i, rc, len = 0;
@@ -1590,9 +1589,9 @@ static const char *qg_get_cycle_counts(struct qpnp_qg *chip)
 	buf[len] = '\0';
 	return buf;
 }
-#endif
 
-#ifdef ODM_WT_EDIT
+#endif
+#ifdef CONFIG_ODM_WT_EDIT
 static void qg_restore_battery_info(struct qpnp_qg *chip)
 {
 	int rc, batt_temp = 0;
@@ -1629,7 +1628,7 @@ static void qg_restore_battery_info(struct qpnp_qg *chip)
 	if (chip->qg_psy)
 		power_supply_changed(chip->qg_psy);
 
-	//qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "Restored battery info!\n");
+	//qg_dbg(chip, QG_DEBUG_SOC, "Restored battery info!\n");
 	dump_all_soc(chip);
 
 out:
@@ -1644,18 +1643,18 @@ static bool qg_validate_battery_info(struct qpnp_qg *chip)
 	int rc = 0;
 
 	for (i = 1; i < BATT_INFO_MAX; i++) {
-		//qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "batt_info[%d]: %d\n", i, chip->batt_info[i]);
+		//qg_dbg(chip, QG_DEBUG_SOC, "batt_info[%d]: %d\n", i, chip->batt_info[i]);
 
 		if ((chip->batt_info[i] == 0 && !(i == BATT_INFO_TEMP || i == BATT_INFO_FCC))
 				 || chip->batt_info[i] == INT_MAX) {
-			qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "batt_info[%d]:%d is invalid\n", i, chip->batt_info[i]);
+			qg_dbg(chip, QG_DEBUG_SOC, "batt_info[%d]:%d is invalid\n", i, chip->batt_info[i]);
 			return false;
 		}
 	}
 
 	batt_id_kohm = chip->batt_id_ohm / 1000;
 	if (batt_id_kohm * DELTA_BATT_ID_PCT / 100 < abs(chip->batt_info[BATT_INFO_RES_ID] - batt_id_kohm)) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "batt_id(%dK) does not match the stored batt_id(%dK)\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "batt_id(%dK) does not match the stored batt_id(%dK)\n",
 				batt_id_kohm, chip->batt_info[BATT_INFO_RES_ID]);
 		return false;
 	}
@@ -1667,13 +1666,13 @@ static bool qg_validate_battery_info(struct qpnp_qg *chip)
 	}
 	if (abs(chip->batt_info[BATT_INFO_TEMP] - batt_temp) >
 			DELTA_BATT_TEMP) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "batt_temp(%d) is higher/lower than stored batt_temp(%d)\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "batt_temp(%d) is higher/lower than stored batt_temp(%d)\n",
 				batt_temp, chip->batt_info[BATT_INFO_TEMP]);
 		return false;
 	}
 
 	if (chip->batt_info[BATT_INFO_FCC] < 0) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "batt_fcc cannot be %d\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "batt_fcc cannot be %d\n",
 				chip->batt_info[BATT_INFO_FCC]);
 		/* There was no charge_full at battery */
 		//return false;
@@ -1699,11 +1698,11 @@ static bool qg_validate_battery_info(struct qpnp_qg *chip)
 	else
 		delta_pct = abs(batt_soc - chip->batt_info[BATT_INFO_SOC]);
 
-	qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "Validating by %s batt_voltage:%d capacity:%d delta_pct:%d\n",
+	qg_dbg(chip, QG_DEBUG_SOC, "Validating by %s batt_voltage:%d capacity:%d delta_pct:%d\n",
 			chip->batt_range_ocv ? "OCV" : "SOC", batt_volt_mv, batt_soc, delta_pct);
 
 	if (chip->batt_range_pct && delta_pct > chip->batt_range_pct) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "delta_pct(%d) is higher than batt_range_pct(%d)\n",
+		qg_dbg(chip, QG_DEBUG_SOC, "delta_pct(%d) is higher than batt_range_pct(%d)\n",
 				delta_pct, chip->batt_range_pct);
 		return false;
 	}
@@ -1723,7 +1722,7 @@ static int qg_set_battery_info(struct qpnp_qg *chip, int val)
 	}
 
 	if (chip->batt_info_id == BATT_INFO_NOTIFY && val == INT_MAX - 1) {
-		qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "Notified from userspace\n");
+		qg_dbg(chip, QG_DEBUG_SOC, "Notified from userspace\n");
 		if (chip->batt_info_restore) {
 			if (!qg_validate_battery_info(chip)) {
 				qg_get_battery_capacity(chip, &prop.intval);
@@ -1871,7 +1870,7 @@ static int qg_psy_set_property(struct power_supply *psy,
 			chip->cl->learned_cap_uah = pval->intval;
 		mutex_unlock(&chip->cl->lock);
 		break;
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	case POWER_SUPPLY_PROP_BATTERY_INFO:
 		pr_info("Healthd init, Set %d:%d.\n", chip->batt_info_id, pval->intval);
 		rc = qg_set_battery_info(chip, pval->intval);
@@ -1962,7 +1961,7 @@ static int qg_psy_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGE_COUNTER:
 		rc = qg_get_charge_counter(chip, &pval->intval);
 		break;
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	case POWER_SUPPLY_PROP_AUTHENTICATE:
 		pval->intval = chip->profile_loaded ? 1 : 0;
 		break;
@@ -2006,7 +2005,9 @@ static int qg_psy_get_property(struct power_supply *psy,
 			pval->intval = (int)temp;
 		break;
 	case POWER_SUPPLY_PROP_CYCLE_COUNTS:
-		pval->strval = qg_get_cycle_counts(chip);
+		rc = get_cycle_count(chip->counter);
+		if (rc < 0)
+			pval->strval = NULL;
 		break;
 	case POWER_SUPPLY_PROP_CYCLE_COUNT:
 		rc = get_cycle_count(chip->counter);
@@ -2047,7 +2048,7 @@ static int qg_property_is_writeable(struct power_supply *psy,
 {
 	switch (psp) {
 	case POWER_SUPPLY_PROP_CHARGE_FULL:
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	case POWER_SUPPLY_PROP_BATTERY_INFO:
 	case POWER_SUPPLY_PROP_BATTERY_INFO_ID:
 	case POWER_SUPPLY_PROP_SOC_NOTIFY_READY:
@@ -2080,7 +2081,7 @@ static enum power_supply_property qg_psy_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_MAX,
 	POWER_SUPPLY_PROP_BATT_FULL_CURRENT,
 	POWER_SUPPLY_PROP_BATT_PROFILE_VERSION,
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	POWER_SUPPLY_PROP_AUTHENTICATE,
 	POWER_SUPPLY_PROP_BATT_CC,
 	POWER_SUPPLY_PROP_BATT_FCC,
@@ -2117,7 +2118,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 {
 	union power_supply_propval prop = {0, };
 	int rc, recharge_soc, health;
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	int batt_uv = 0;
 	int recharge_uv = 0;
 #endif
@@ -2141,7 +2142,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 	}
 	recharge_soc = prop.intval;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	rc = power_supply_get_property(chip->batt_psy,
 			POWER_SUPPLY_PROP_RECHARGE_UV, &prop);
 	if (rc < 0 || prop.intval < 0) {
@@ -2166,7 +2167,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			qg_dbg(chip, QG_DEBUG_STATUS, "Terminated charging @ msoc=%d\n",
 					chip->msoc);
 		}
-#ifndef ODM_WT_EDIT
+#ifndef CONFIG_ODM_WT_EDIT
 	} else if ((!chip->charge_done || chip->msoc < recharge_soc)
 				&& chip->charge_full) {
 #else
@@ -2174,7 +2175,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 				|| ((batt_uv < recharge_uv) && (chip->charge_status == POWER_SUPPLY_STATUS_FULL))) {
 #endif
 
-		#ifndef ODM_WT_EDIT
+		#ifndef CONFIG_ODM_WT_EDIT
 		if (chip->wa_flags & QG_RECHARGE_SOC_WA) {
 			/* Force recharge */
 			prop.intval = 0;
@@ -2196,7 +2197,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 		 * the USB is removed, if linearize-soc is set scale
 		 * msoc from 100% for better UX.
 		 */
-	#ifndef ODM_WT_EDIT
+	#ifndef CONFIG_ODM_WT_EDIT
 		if (chip->dt.linearize_soc && chip->msoc < 99) {
 			chip->maint_soc = FULL_SOC;
 			qg_scale_soc(chip, false);
@@ -2207,7 +2208,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 			qg_scale_soc(chip, false);
 		}
 	#endif
-	#ifndef ODM_WT_EDIT
+	#ifndef CONFIG_ODM_WT_EDIT
 		qg_dbg(chip, QG_DEBUG_STATUS, "msoc=%d recharge_soc=%d charge_full (1->0)\n",
 					chip->msoc, recharge_soc);
 		chip->charge_full = false;
@@ -2217,7 +2218,7 @@ static int qg_charge_full_update(struct qpnp_qg *chip)
 	#endif
 	}
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	if ((chip->charge_status != POWER_SUPPLY_STATUS_CHARGING) && (chip->charge_status != POWER_SUPPLY_STATUS_FULL)) {
 		chip->charge_full = false;
 	}
@@ -2287,7 +2288,7 @@ static void qg_status_change_work(struct work_struct *work)
 		goto out;
 	}
 
-#ifndef ODM_WT_EDIT
+#ifndef CONFIG_ODM_WT_EDIT
 	rc = power_supply_get_property(chip->batt_psy,
 			POWER_SUPPLY_PROP_STATUS, &prop);
 #else
@@ -2658,7 +2659,7 @@ static int qg_load_battery_profile(struct qpnp_qg *chip)
 		pr_err("Failed to read battery fastcharge current rc:%d\n", rc);
 		chip->bp.fastchg_curr_ma = -EINVAL;
 	}
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	#ifdef CONFIG_DISABLE_TEMP_PROTECT
 		chip->bp.float_volt_uv = 4100000;
 		chip->bp.fastchg_curr_ma = 1500;
@@ -3533,11 +3534,11 @@ static int qg_parse_dt(struct qpnp_qg *chip)
 	else
 		chip->dt.rbat_conn_mohm = temp;
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	chip->batt_info_restore = of_property_read_bool(node,
 					"qcom,qg-restore-batt-info");
 
-	qg_dbg(chip, QG_DEBUG_RESTORE_SOC, "restore: %d validate_by_ocv: %d range_pct: %d\n",
+	qg_dbg(chip, QG_DEBUG_SOC, "restore: %d validate_by_ocv: %d range_pct: %d\n",
 			chip->batt_info_restore, qg_batt_valid_ocv, qg_batt_range_pct);
 #endif
 
@@ -3663,7 +3664,7 @@ static int process_suspend(struct qpnp_qg *chip)
 		return 0;
 
 	/* disable GOOD_OCV IRQ in sleep */
-	#ifndef ODM_WT_EDIT
+	#ifndef CONFIG_ODM_WT_EDIT
 	vote(chip->good_ocv_irq_disable_votable,
 			QG_INIT_STATE_IRQ_DISABLE, true, 0);
 	#endif
@@ -3747,7 +3748,7 @@ static int process_resume(struct qpnp_qg *chip)
 {
 	u8 status2 = 0, rt_status = 0, val = 0;
 	u32 ocv_uv = 0, ocv_raw = 0;
-#ifndef ODM_WT_EDIT
+#ifndef CONFIG_ODM_WT_EDIT
 	int rc, batt_temp = 0;
 #else
 	int rc = 0;
@@ -3758,7 +3759,7 @@ static int process_resume(struct qpnp_qg *chip)
 		return 0;
 
 	/* enable GOOD_OCV IRQ when awake */
-	#ifndef ODM_WT_EDIT
+	#ifndef CONFIG_ODM_WT_EDIT
 	vote(chip->good_ocv_irq_disable_votable,
 			QG_INIT_STATE_IRQ_DISABLE, false, 0);
 	#endif
@@ -3775,7 +3776,7 @@ static int process_resume(struct qpnp_qg *chip)
 			pr_err("Failed to read good_ocv, rc=%d\n", rc);
 			return rc;
 		}
-	#ifndef ODM_WT_EDIT
+	#ifndef CONFIG_ODM_WT_EDIT
 		rc = qg_get_battery_temp(chip, &batt_temp);
 		if (rc < 0) {
 			pr_err("Failed to read BATT_TEMP, rc=%d\n", rc);
@@ -3860,7 +3861,7 @@ static int qpnp_qg_resume_noirq(struct device *dev)
 	return 0;
 }
 
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 static int qpnp_qg_suspend(struct device *dev)
 {
        struct qpnp_qg *chip = dev_get_drvdata(dev);
@@ -3895,7 +3896,7 @@ static int qpnp_qg_resume(struct device *dev)
 static const struct dev_pm_ops qpnp_qg_pm_ops = {
 	.suspend_noirq	= qpnp_qg_suspend_noirq,
 	.resume_noirq	= qpnp_qg_resume_noirq,
-	#ifdef ODM_WT_EDIT
+	#ifdef CONFIG_ODM_WT_EDIT
 	.suspend        = qpnp_qg_suspend,
 	.resume         = qpnp_qg_resume,
 	#endif
@@ -4070,7 +4071,7 @@ static int qpnp_qg_probe(struct platform_device *pdev)
 	}
 
 	qg_get_battery_capacity(chip, &soc);
-#ifdef ODM_WT_EDIT
+#ifdef CONFIG_ODM_WT_EDIT
 	chip->soc_reporting_ready = true;
 	chip->batt_range_ocv = qg_batt_valid_ocv;
 	chip->batt_range_pct = qg_batt_range_pct;

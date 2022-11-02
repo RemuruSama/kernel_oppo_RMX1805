@@ -23,6 +23,9 @@ config RMNET_IPA
 	  for RmNet Data Driver and also exchange of QMI messages between
 	  A7 and Q6 IPA-driver.
 
+config VENDOR_EDIT
+	bool "VENDOR EDIT"
+
 config GSI
 	bool "GSI support"
 	help

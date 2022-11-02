@@ -1,5 +1,5 @@
-ifdef ODM_WT_EDIT
-ifndef WT_FINAL_RELEASE
+ifdef CONFIG_ODM_WT_EDIT
+ifndef CONFIG_WT_FINAL_RELEASE
 ccflags-y += -D__WT_BATTERY_CHARGER_LOG_OUTPUT__
 endif #/* WT_FINAL_RELEASE */
 obj-y += wt_charger_log.o

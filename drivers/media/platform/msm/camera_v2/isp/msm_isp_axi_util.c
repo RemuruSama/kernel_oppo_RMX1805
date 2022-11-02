@@ -4194,6 +4194,8 @@ int msm_isp_update_axi_stream(struct vfe_device *vfe_dev, void *arg)
 		break;
 	}
 	case UPDATE_STREAM_OFFLINE_AXI_CONFIG: {
+			int k;
+			int j;
 		for (i = 0; i < update_cmd->num_streams; i++) {
 			update_info =
 				(struct msm_vfe_axi_stream_cfg_update_info *)
